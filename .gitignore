@@ -1,0 +1,41 @@
+# Python bytecode files
+__pycache__/
+*.py[cod]
+
+# Django migrations
+*/migrations/*
+!*/migrations/__init__.py
+
+# Database files
+# db.sqlite3
+# *.sqlite3
+
+settings.py
+development.py
+
+# Virtual environment
+venv/
+env/
+.venv/
+.env/
+
+# Log files
+*.log
+
+# Static files
+/static/
+*.static
+
+# Media files (if you have a separate media folder)
+media/
+
+# IDE configurations
+.vscode/
+*.idea/
+
+# Python egg files
+*.egg
+*.egg-info/
+dist/
+build/
+README.md

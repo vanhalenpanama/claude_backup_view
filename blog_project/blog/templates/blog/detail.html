@@ -1,0 +1,58 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+<section class="main">
+    <h2 class="main-title">글 조회</h2>
+
+    <div class="view">
+        <div class="view-header">
+            <h2>{{ post.title }}</h2>
+            <div class="view-info">
+                <span>작성자: {{ post.author.username }}</span>
+                <span>작성일: {{ post.created_at|date:"Y.m.d" }}</span>
+                <span>조회수: {{ post.views }}<span>
+            </div>
+        </div>
+
+        {% if post.image %}
+    <img src="{{ post.image.url }}" alt="{{ post.title }}">
+{% endif %}
+
+        <div class="view-content">
+            {{ post.content|linebreaks }}
+        </div>
+    </div>
+
+
+    <h3>댓글</h3>
+    {% include 'blog/comments.html' with comments=comments %}
+    
+    <h4>댓글 작성</h4>
+    <form method="post">
+        {% csrf_token %}
+        {{ comment_form }}
+        <button type="submit">댓글 작성</button>
+    </form>
+
+    <script>
+        function showReplyForm(commentId) {
+            var form = document.getElementById('replyForm' + commentId);
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+        </script>
+
+    <div class="btn-group">
+        <a href="{% url 'post_list' %}" class="btn">목록</a>
+        {% if user == post.author %}
+            <a href="{% url 'edit_post' post.pk %}" class="btn">수정</a>
+            <form method="post" action="{% url 'delete_post' post.pk %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn" onclick="return confirm('정말 삭제하시겠습니까?');">삭제</button>
+            </form>
+        {% endif %}
+    </div>
+</section>
+{% endblock %} 
+
+
+

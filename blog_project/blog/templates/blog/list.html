@@ -1,0 +1,98 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+<section class="main">
+    <div class="text-center mb-8">
+        <h2 class="main-title">My BLOG</h2>
+        <p class="main-description"></p>
+            <form method="get">
+                <select name="category">
+                    <option value="전체" {% if current_category == '전체' %}selected{% endif %}>카테고리 전체</option>
+                    {% for category in categories %}
+                        <option value="{{ category.name }}" {% if current_category == category.name %}selected{% endif %}>{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+                <select name="order" id="orderSelect">
+                    <option value="-created_at" {% if current_order == '-created_at' %}selected{% endif %}>최신순</option>
+                    <option value="created_at" {% if current_order == 'created_at' %}selected{% endif %}>오래된순</option>
+                </select>
+                <input type="text" name="search" placeholder="제목 검색" value="{{ search_query }}">
+                <button type="submit">검색</button>
+            </form>
+    </div>
+
+    <div class="content-wrapper">
+        <aside class="sidebar">
+            <div class="profile-card">
+                <h5 class="profile-name">개인 학습 페이지</h5>
+                <p class="profile-description">Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+                {% if user.is_authenticated %}
+                {% with user_groups=user.groups.all|stringformat:'s' %}
+                {% if 'default' not in user_groups and 'test' not in user_groups %}
+                <a href="{% url 'write_post' %}" class="nav-link">글 쓰기</a>
+                {% endif %}
+                {% endwith %}
+                {% else %}
+                {% endif %}
+            </div>
+            <div class="categories-card">
+                <h6 class="categories-title">Categories</h6>
+                <ul class="categories-list">
+                    <li class="category-item">SW</li>
+                    <li class="category-item">IT</li>
+                </ul>
+            </div>
+        </aside>
+
+        
+
+        <div class="posts-grid">
+            {% for post in posts %}
+            <div class="post-card">
+                <div class="post-content">
+                    <div class="post-meta">
+                        <span class="post-category">{{ post.category.name }}</span>
+                        <small class="post-date">{{ post.created_at|date:"Y.m.d" }}</small>
+                    </div>
+                    <h5 class="post-title">{{ post.title }}</h5>
+                    <p class="post-excerpt">{{ post.excerpt }}</p>
+                    <div class="post-footer">
+                        <span class="post-author">by {{ post.author.username }}</span>
+                        <p>조회수: {{ post.views }}</p>
+                        {% if not 'default' in user.groups.all|stringformat:'s' %}
+                        <a href="{% url 'post_detail' post.pk %}" class="post-link">Read more</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="pagination-wrapper">
+            {% if is_paginated %}
+            <nav>
+                <ul class="pagination">
+                    {% if page_obj.has_previous %}
+                    <li><a href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}" class="pagination-link">&laquo; First</a></li>
+                    <li><a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}" class="pagination-link">Previous</a></li>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <li class="pagination-current">{{ num }}</li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li><a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}" class="pagination-link">{{ num }}</a></li>
+                    {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                    <li><a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}" class="pagination-link">Next</a></li>
+                    <li><a href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}" class="pagination-link">Last &raquo;</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

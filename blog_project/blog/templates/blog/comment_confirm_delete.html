@@ -1,0 +1,11 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+<h2>댓글 삭제</h2>
+<p>정말로 이 댓글을 삭제하시겠습니까?</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">예, 삭제합니다</button>
+</form>
+<a href="{% url 'post_detail' pk=comment.post.pk %}">아니오, 취소합니다</a>
+{% endblock %}
